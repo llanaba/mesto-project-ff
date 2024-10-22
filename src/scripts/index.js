@@ -1,3 +1,6 @@
+import '../pages/index.css';
+import initialCards from './cards.js';
+
 /**
  * Создает элемент карточки, получая на вход данные карточки и функцию удаления
  * @param {Object} cardData — объект, содержащий данные карточки
