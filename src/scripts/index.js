@@ -62,13 +62,25 @@ const popupViewImage = document.querySelector('.popup_type_image');
 
 buttonAddNewCard.addEventListener('click', function () {
   openModal(popupAddNewCard);
-})
+});
+
+const editProfileFormElement = popupEditProfile.querySelector('.popup__form');
+const userName = document.querySelector('.profile__title');
+const userDescription = document.querySelector('.profile__description');
 
 buttonEditProfile.addEventListener('click', function () {
-  const userName = document.querySelector('.profile__title').textContent;
-  const userDescription = document.querySelector('.profile__description').textContent;
-  const popupEditForm = popupEditProfile.querySelector('.popup__form');
-  popupEditForm.name.value = userName;
-  popupEditForm.description.value = userDescription;
+  editProfileFormElement.name.value = userName.textContent;
+  editProfileFormElement.description.value = userDescription.textContent;
   openModal(popupEditProfile);
 })
+
+function handleFormSubmit(evt) {
+  evt.preventDefault();
+  const nameInput = editProfileFormElement.querySelector('.popup__input_type_name');
+  const descriptionInput = editProfileFormElement.querySelector('.popup__input_type_description');
+  userName.textContent = nameInput.value;
+  userDescription.textContent = descriptionInput.value;
+  closeModal(popupEditProfile);
+}
+
+editProfileFormElement.addEventListener('submit', handleFormSubmit);
