@@ -1,5 +1,6 @@
 import '../pages/index.css';
 import initialCards from './cards.js';
+import { openModal, closeModal } from './modal.js';
 
 /**
  * Создает элемент карточки, получая на вход данные карточки и функцию удаления
@@ -25,6 +26,11 @@ function createCard(cardData, deleteCard) {
     deleteCard(cardElement);
   });
 
+  // Вешаем обработчик события на изображение, чтобы его можно было открыть на весь экран
+  cardImageElement.addEventListener('click', function () {
+    openModal(popupViewImage);
+  });
+
   // Возвращаем готовый элемент карточки:
   return cardElement;
 }
@@ -43,4 +49,26 @@ const cardListContainer = document.querySelector('.places__list');
 initialCards.forEach((cardData) => {
   const card = createCard(cardData, deleteCard);
   cardListContainer.append(card);
+})
+
+
+// Попапы и кнопки, которые их активируют:
+const buttonAddNewCard = document.querySelector('.profile__add-button');
+const buttonEditProfile = document.querySelector('.profile__edit-button');
+
+const popupAddNewCard = document.querySelector('.popup_type_new-card');
+const popupEditProfile = document.querySelector('.popup_type_edit');
+const popupViewImage = document.querySelector('.popup_type_image');
+
+buttonAddNewCard.addEventListener('click', function () {
+  openModal(popupAddNewCard);
+})
+
+buttonEditProfile.addEventListener('click', function () {
+  const userName = document.querySelector('.profile__title').textContent;
+  const userDescription = document.querySelector('.profile__description').textContent;
+  const popupEditForm = popupEditProfile.querySelector('.popup__form');
+  popupEditForm.name.value = userName;
+  popupEditForm.description.value = userDescription;
+  openModal(popupEditProfile);
 })
