@@ -8,13 +8,14 @@ import { openModal, closeModal } from './modal.js';
  * @param {Function} deleteCard — колбэк-функция, ответственная за удаление карточки
  * @returns {HTMLElement} cardElement — готовый к добавлению в DOM элемент карточки
  */
-function createCard(cardData, deleteCard) {
+function createCard(cardData, deleteCard, likeCard) {
   // Клонируем темплейт карточки, ищем в нем все элементы:
   const cardTemplate = document.querySelector('#card-template').content;
   const cardElement = cardTemplate.querySelector('li').cloneNode(true);
   const cardTitleElement = cardElement.querySelector('.card__title');
   const cardImageElement = cardElement.querySelector('.card__image');
   const cardDeleteButtonElement = cardElement.querySelector('.card__delete-button');
+  const cardLikeButtonElement = cardElement.querySelector('.card__like-button');
   
   // Заполняем элементы карточки данными:
   cardTitleElement.textContent = cardData.name;
@@ -25,6 +26,10 @@ function createCard(cardData, deleteCard) {
   cardDeleteButtonElement.addEventListener('click', function () {
     deleteCard(cardElement);
   });
+
+  cardLikeButtonElement.addEventListener('click', function () {
+    likeCard(cardElement);
+  })
 
   // Вешаем обработчик события на изображение, чтобы его можно было открыть на весь экран
   cardImageElement.addEventListener('click', function () {
@@ -43,11 +48,20 @@ function deleteCard(card) {
   card.remove();
 }
 
+/**
+ * Ставит лайк на элемент карточки, переданный в качестве аргумента
+ * @param {HTMLElement} card — элемент карточки, которую необходимо лайкнуть
+ */
+function likeCard(card) {
+  const cardLikeButtonElement = card.querySelector('.card__like-button');
+  cardLikeButtonElement.classList.toggle('card__like-button_is-active');
+}
+
 // Выводим карточки на страницу:
 const cardListContainer = document.querySelector('.places__list');
 
 initialCards.forEach((cardData) => {
-  const card = createCard(cardData, deleteCard);
+  const card = createCard(cardData, deleteCard, likeCard);
   cardListContainer.append(card);
 })
 
@@ -100,7 +114,7 @@ function prepareCardData(cardForm) {
 function handleAddCard(evt) {
   evt.preventDefault();
   const cardData = prepareCardData(createCardFormElement);
-  const card = createCard(cardData, deleteCard);
+  const card = createCard(cardData, deleteCard, likeCard);
   cardListContainer.prepend(card);
   createCardFormElement.reset();
   closeModal(popupAddNewCard);
