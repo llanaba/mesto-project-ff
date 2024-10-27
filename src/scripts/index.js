@@ -72,7 +72,7 @@ buttonEditProfile.addEventListener('click', function () {
   editProfileFormElement.name.value = userName.textContent;
   editProfileFormElement.description.value = userDescription.textContent;
   openModal(popupEditProfile);
-})
+});
 
 function handleFormSubmit(evt) {
   evt.preventDefault();
@@ -81,6 +81,29 @@ function handleFormSubmit(evt) {
   userName.textContent = nameInput.value;
   userDescription.textContent = descriptionInput.value;
   closeModal(popupEditProfile);
-}
+};
 
 editProfileFormElement.addEventListener('submit', handleFormSubmit);
+
+const createCardFormElement = popupAddNewCard.querySelector('.popup__form');
+
+function prepareCardData(cardForm) {
+  const cardNameInput = cardForm.querySelector('.popup__input_type_card-name');
+  const cardImageUrlInput = cardForm.querySelector('.popup__input_type_url');
+  const cardData = {
+    name: cardNameInput.value,
+    link: cardImageUrlInput.value
+  }
+  return cardData;
+};
+
+function handleAddCard(evt) {
+  evt.preventDefault();
+  const cardData = prepareCardData(createCardFormElement);
+  const card = createCard(cardData, deleteCard);
+  cardListContainer.prepend(card);
+  createCardFormElement.reset();
+  closeModal(popupAddNewCard);
+}
+
+createCardFormElement.addEventListener('submit', handleAddCard);
