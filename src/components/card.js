@@ -54,19 +54,3 @@ export function likeCard(card) {
   const cardLikeButtonElement = card.querySelector('.card__like-button');
   cardLikeButtonElement.classList.toggle('card__like-button_is-active');
 }
-
-/**
- * Извлекает данные из формы создания карточки и создает на их основании объект
- * с данными карточки
- * @param {HTMLFormElement} cardForm - форма с данными, введенными пользователем
- * @returns {Object} cardData - объект, содержащий данные карточки
- */
-export function prepareCardData(cardForm) {
-  const cardNameInput = cardForm.querySelector('.popup__input_type_card-name');
-  const cardImageUrlInput = cardForm.querySelector('.popup__input_type_url');
-  const cardData = {
-    name: cardNameInput.value,
-    link: cardImageUrlInput.value
-  }
-  return cardData;
-};
