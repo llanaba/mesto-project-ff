@@ -3,7 +3,8 @@ import initialCards from './cards.js';
 import { openModal, closeModal } from './modal.js';
 
 /**
- * Создает элемент карточки, получая на вход данные карточки и функцию удаления
+ * Создает элемент карточки, получая на вход данные карточки, функцию удаления
+ * и функцию лайка карточки
  * @param {Object} cardData — объект, содержащий данные карточки
  * @param {Function} deleteCard — колбэк-функция, ответственная за удаление карточки
  * @returns {HTMLElement} cardElement — готовый к добавлению в DOM элемент карточки
@@ -27,13 +28,15 @@ function createCard(cardData, deleteCard, likeCard) {
     deleteCard(cardElement);
   });
 
+  // Вешаем обработчик событий на кнопку лайка:
   cardLikeButtonElement.addEventListener('click', function () {
     likeCard(cardElement);
   })
 
   // Вешаем обработчик события на изображение, чтобы его можно было открыть на весь экран
   cardImageElement.addEventListener('click', function () {
-    openModal(popupViewImage);
+    // openModal(popupViewImage);
+    viewImage(cardData.name, cardData.link);
   });
 
   // Возвращаем готовый элемент карточки:
@@ -55,6 +58,22 @@ function deleteCard(card) {
 function likeCard(card) {
   const cardLikeButtonElement = card.querySelector('.card__like-button');
   cardLikeButtonElement.classList.toggle('card__like-button_is-active');
+}
+
+/**
+ * Показывает увеличенную версию изображения в модальном окне
+ * @param {string} cardName — название изображения, которое используется для подписи
+ * изображения и для свойства alt
+ * @param {string} cardLink - ссылка на изображение, которая используется для 
+ * свойства src
+ */
+function viewImage(cardName, cardLink) {
+  openModal(popupViewImage);
+  const imageElement = popupViewImage.querySelector('.popup__image');
+  const imageCaption = popupViewImage.querySelector('.popup__caption');
+  imageCaption.textContent = cardName;
+  imageElement.src = cardLink;
+  imageElement.alt = cardName;
 }
 
 // Выводим карточки на страницу:
