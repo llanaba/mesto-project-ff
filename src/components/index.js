@@ -6,6 +6,7 @@ import {
   likeCard 
 } from './card.js';
 import { openModal, closeModal } from './modal.js';
+import { enableValidation, clearValidation, toggleButtonState } from './validation';
 
 
 // DOM-ЭЛЕМЕНТЫ СТРАНИЦЫ
@@ -41,6 +42,15 @@ const cardImageUrlInput = createCardFormElement.querySelector('.popup__input_typ
 const imageElement = popupViewImage.querySelector('.popup__image');
 const imageCaption = popupViewImage.querySelector('.popup__caption');
 
+// Настройки валидации:
+const validationConfig = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_error',
+  errorClass: 'popup__error-text'
+}
 
 //ИНИЦИАЛИЗАЦИЯ СТРАНИЦЫ
 
@@ -59,6 +69,11 @@ buttonsClosePopup.forEach(button => {
     closeModal(activePopup);
   })
 })
+
+// Включаем валидацию всех форм на странице:
+
+enableValidation(validationConfig);
+
 
 // ВЗАИМОДЕЙСТВИЕ С ПОЛЬЗОВАТЕЛЕМ
 
@@ -82,6 +97,10 @@ function handleAddCardSubmit(evt) {
   const card = createCard(cardData, deleteCard, likeCard, viewImage);
   cardListContainer.prepend(card);
   createCardFormElement.reset();
+
+  const button = createCardFormElement.querySelector('.popup__button');
+  const inputList = Array.from(createCardFormElement.querySelectorAll('.popup__input'));
+  toggleButtonState(inputList, button);
   closeModal(popupAddNewCard);
 }
 
@@ -92,6 +111,7 @@ createCardFormElement.addEventListener('submit', handleAddCardSubmit);
 buttonEditProfile.addEventListener('click', function () {
   editProfileFormElement.name.value = userName.textContent;
   editProfileFormElement.description.value = userDescription.textContent;
+  clearValidation(editProfileFormElement);
   openModal(popupEditProfile);
 });
 
