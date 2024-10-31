@@ -7,7 +7,11 @@ import {
 } from './card.js';
 import { openModal, closeModal } from './modal.js';
 import { enableValidation, clearValidation, toggleButtonState } from './validation';
-import { getUserData, getInitialCardsData } from './api';
+import { 
+  getUser, 
+  getInitialCards, 
+  updateProfileInfo 
+} from './api';
 
 // DOM-ЭЛЕМЕНТЫ СТРАНИЦЫ
 
@@ -81,8 +85,8 @@ function renderInitialCards(cardsData) {
 
 function renderInitialPage() {
   Promise.all([
-    getUserData(),
-    getInitialCardsData()
+    getUser(),
+    getInitialCards()
   ])
     .then(([ userData, cardsData ]) => {
       const userId = userData._id;
@@ -170,8 +174,10 @@ buttonEditProfile.addEventListener('click', function () {
  */
 function handleEditProfileFormSubmit(evt) {
   evt.preventDefault();
-  userName.textContent = userNameInput.value;
-  userDescription.textContent = userDescriptionInput.value;
+  updateProfileInfo(userNameInput.value, userDescriptionInput.value)
+    .then((userData) => {
+      renderUser(userData);
+    })
   closeModal(popupEditProfile);
 };
 
