@@ -38,5 +38,22 @@ export function updateProfileInfo (userName, userDescription) {
       return res.json();
     }
     return Promise.reject(`Ошибка: ${res.status}`);
+  });
+}
+
+export function postNewCard(cardName, imageLink) {
+  return fetch(`${apiConfig.baseUrl}cards`, {
+    method: 'POST',
+    headers: apiConfig.headers,
+    body: JSON.stringify({
+      name: cardName,
+      link: imageLink
+    })
   })
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка: ${res.status}`);
+  });
 }

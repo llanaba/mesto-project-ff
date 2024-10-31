@@ -10,7 +10,8 @@ import { enableValidation, clearValidation, toggleButtonState } from './validati
 import { 
   getUser, 
   getInitialCards, 
-  updateProfileInfo 
+  updateProfileInfo, 
+  postNewCard
 } from './api';
 
 // DOM-ЭЛЕМЕНТЫ СТРАНИЦЫ
@@ -146,8 +147,15 @@ function handleAddCardSubmit(evt) {
     name: cardNameInput.value,
     link: cardImageUrlInput.value
   }
-  const card = createCard(cardData, deleteCard, likeCard, viewImage);
-  cardListContainer.prepend(card);
+  postNewCard(cardData.name, cardData.link)
+    .then((cardData) => {
+      const card = createCard(cardData, deleteCard, likeCard, viewImage);
+      cardListContainer.prepend(card);
+    })
+    .catch((err) => {
+      console.error(`Ошибка: ${err}`)
+    })
+
   createCardFormElement.reset();
 
   const button = createCardFormElement.querySelector(validationConfig.submitButtonSelector);
@@ -177,6 +185,9 @@ function handleEditProfileFormSubmit(evt) {
   updateProfileInfo(userNameInput.value, userDescriptionInput.value)
     .then((userData) => {
       renderUser(userData);
+    })
+    .catch((err) => {
+      console.error(`Ошибка: ${err}`)
     })
   closeModal(popupEditProfile);
 };
