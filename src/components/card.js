@@ -13,11 +13,13 @@ export function createCard(cardData, deleteCard, likeCard, viewImage) {
   const cardImageElement = cardElement.querySelector('.card__image');
   const cardDeleteButtonElement = cardElement.querySelector('.card__delete-button');
   const cardLikeButtonElement = cardElement.querySelector('.card__like-button');
+  const cardLikeCounter = cardElement.querySelector('.card__like-counter');
   
   // Заполняем элементы карточки данными:
   cardTitleElement.textContent = cardData.name;
   cardImageElement.src = cardData.link;
   cardImageElement.alt = cardData.name;
+  cardLikeCounter.textContent = cardData.likes.length;
   
   // Вешаем обработчик событий на кнопку удаления:
   cardDeleteButtonElement.addEventListener('click', function () {
