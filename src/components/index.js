@@ -7,13 +7,14 @@ import {
 } from './card.js';
 import { openModal, closeModal } from './modal.js';
 import { enableValidation, clearValidation, toggleButtonState } from './validation';
-
+import { getUserData, getInitialCardsData } from './api';
 
 // DOM-ЭЛЕМЕНТЫ СТРАНИЦЫ
 
 // Элементы, относящиеся к профилю пользователя на странице:
 const userName = document.querySelector('.profile__title');
 const userDescription = document.querySelector('.profile__description');
+const userAvatar = document.querySelector('.profile__image');
 
 // Список карточек:
 const cardListContainer = document.querySelector('.places__list');
@@ -42,6 +43,9 @@ const cardImageUrlInput = createCardFormElement.querySelector('.popup__input_typ
 const imageElement = popupViewImage.querySelector('.popup__image');
 const imageCaption = popupViewImage.querySelector('.popup__caption');
 
+
+// КОНСТАНТЫ НАСТРОЕК
+
 // Настройки валидации:
 const validationConfig = {
   formSelector: '.popup__form',
@@ -52,14 +56,58 @@ const validationConfig = {
   errorClass: 'popup__error-text'
 }
 
+// Настройки для API:
+export const apiConfig = {
+  baseUrl: 'https://mesto.nomoreparties.co/v1/wff-cohort-25/',
+  headers: {
+    authorization: '90d29a06-be47-4d93-96ab-3707cf211001',
+    'Content-Type': 'application/json'
+  }
+}
+
+function renderUser(userData) {
+  userName.textContent = userData.name;
+  userDescription.textContent = userData.about;
+  userAvatar.style.backgroundImage = `url(${userData.avatar})`;
+  // userId = userData._id;
+}
+
+function renderInitialCards(cardsData) {
+  cardsData.forEach((cardData) => {
+    const card = createCard(cardData, deleteCard, likeCard, viewImage);
+    cardListContainer.append(card);
+})  
+}
+
+function renderInitialPage() {
+  Promise.all([
+    getUserData(),
+    getInitialCardsData()
+  ])
+    .then(([ userData, cardsData ]) => {
+      const userId = userData._id;
+      console.log(userId);
+      renderUser(userData);
+      renderInitialCards(cardsData);
+    })
+    .catch((err) => {
+      console.error(`Ошибка: ${err}`)
+    })
+}
+
+
 //ИНИЦИАЛИЗАЦИЯ СТРАНИЦЫ
 
-// Выводим исходные карточки на страницу:
+renderInitialPage(); 
+// let userId;
 
-initialCards.forEach((cardData) => {
-  const card = createCard(cardData, deleteCard, likeCard, viewImage);
-  cardListContainer.append(card);
-})
+
+// СТАРАЯ ВЕРСИЯ (удалить) Выводим исходные карточки на страницу:
+
+// initialCards.forEach((cardData) => {
+//   const card = createCard(cardData, deleteCard, likeCard, viewImage);
+//   cardListContainer.append(card);
+// })
 
 // Вешаем слушатели на статичные элементы:
 

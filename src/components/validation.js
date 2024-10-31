@@ -1,5 +1,3 @@
-// ВАЛИДАЦИЯ (вынести в отдельный файл)
-
 function showInputError(config, formElement, inputElement, errorMessage) {
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
   inputElement.classList.add(config.inputErrorClass);
