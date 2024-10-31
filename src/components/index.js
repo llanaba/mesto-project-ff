@@ -98,9 +98,9 @@ function handleAddCardSubmit(evt) {
   cardListContainer.prepend(card);
   createCardFormElement.reset();
 
-  const button = createCardFormElement.querySelector('.popup__button');
-  const inputList = Array.from(createCardFormElement.querySelectorAll('.popup__input'));
-  toggleButtonState(inputList, button);
+  const button = createCardFormElement.querySelector(validationConfig.submitButtonSelector);
+  const inputList = Array.from(createCardFormElement.querySelectorAll(validationConfig.inputSelector));
+  toggleButtonState(validationConfig, inputList, button);
   closeModal(popupAddNewCard);
 }
 
@@ -111,7 +111,7 @@ createCardFormElement.addEventListener('submit', handleAddCardSubmit);
 buttonEditProfile.addEventListener('click', function () {
   editProfileFormElement.name.value = userName.textContent;
   editProfileFormElement.description.value = userDescription.textContent;
-  clearValidation(editProfileFormElement);
+  clearValidation(validationConfig, editProfileFormElement);
   openModal(popupEditProfile);
 });
 
