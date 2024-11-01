@@ -67,6 +67,19 @@ export function deleteCardApi(cardId) {
       if (res.ok) {
         return res
       } 
-      return Promise.reject(`Ошибка: ${res.status}`)
+      return Promise.reject(`Ошибка: ${res.status}`);
+    })
+}
+
+export function likeCardApi(cardId, method) {
+  return fetch(`${apiConfig.baseUrl}cards/likes/${cardId}`, {
+    method: method,
+    headers: apiConfig.headers
+  })
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      } 
+      return Promise.reject(`Ошибка: ${res.status}`);
     })
 }

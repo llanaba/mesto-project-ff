@@ -3,7 +3,7 @@ import initialCards from './cards.js';
 import { 
   createCard, 
   deleteCard, 
-  likeCard 
+  handleLikeCard 
 } from './card.js';
 import { openModal, closeModal } from './modal.js';
 import { enableValidation, clearValidation, toggleButtonState } from './validation';
@@ -74,12 +74,11 @@ function renderUser(userData) {
   userName.textContent = userData.name;
   userDescription.textContent = userData.about;
   userAvatar.style.backgroundImage = `url(${userData.avatar})`;
-  // userId = userData._id;
 }
 
 function renderInitialCards(cardsData, userId) {
   cardsData.forEach((cardData) => {
-    const card = createCard(cardData, userId, deleteCard, likeCard, viewImage);
+    const card = createCard(cardData, userId, deleteCard, handleLikeCard, viewImage);
     cardListContainer.append(card);
 })  
 }
@@ -142,7 +141,7 @@ function handleAddCardSubmit(evt) {
   ])
     .then(([ userData, cardData ]) => {
       console.log("Начинаем создавать новую карточку")
-      const card = createCard(cardData, userData._id, deleteCard, likeCard, viewImage);
+      const card = createCard(cardData, userData._id, deleteCard, handleLikeCard, viewImage);
       cardListContainer.prepend(card);
     })
     .catch((err) => {
