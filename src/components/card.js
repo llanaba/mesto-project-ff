@@ -1,3 +1,9 @@
+import { deleteCardApi } from './api.js'
+
+function isOwner(cardData, userId) {
+  return (cardData.owner._id === userId);
+}
+
 /**
  * Создает элемент карточки, получая на вход данные карточки, функцию удаления
  * и функцию лайка карточки
@@ -5,7 +11,7 @@
  * @param {Function} deleteCard — колбэк-функция, ответственная за удаление карточки
  * @returns {HTMLElement} cardElement — готовый к добавлению в DOM элемент карточки
  */
-export function createCard(cardData, deleteCard, likeCard, viewImage) {
+export function createCard(cardData, userId, deleteCard, likeCard, viewImage) {
   // Клонируем темплейт карточки, ищем в нем все элементы:
   const cardTemplate = document.querySelector('#card-template').content;
   const cardElement = cardTemplate.querySelector('li').cloneNode(true);
@@ -21,9 +27,15 @@ export function createCard(cardData, deleteCard, likeCard, viewImage) {
   cardImageElement.alt = cardData.name;
   cardLikeCounter.textContent = cardData.likes.length;
   
+
+  // Отрисовываем кнопку удаления, если пользователь — автор карточки:
+  if (isOwner(cardData, userId)) {
+    cardDeleteButtonElement.style.display = 'block';
+  }
+
   // Вешаем обработчик событий на кнопку удаления:
   cardDeleteButtonElement.addEventListener('click', function () {
-    deleteCard(cardElement);
+    deleteCard(cardElement, cardData);
   });
 
   // Вешаем обработчик событий на кнопку лайка:
@@ -44,8 +56,14 @@ export function createCard(cardData, deleteCard, likeCard, viewImage) {
  * Удаляет элемент карточки, переданный в качестве аргумента
  * @param {HTMLElement} card — элемент карточки, которую необходимо удалить
  */
-export function deleteCard(card) {
-  card.remove();
+export function deleteCard(cardElement, cardData) {
+  deleteCardApi(cardData._id)
+    .then((res) => {
+      cardElement.remove();
+    })
+    .catch((err) => {
+      console.error(`Ошибка: ${err}`)
+    })
 }
 
 /**
@@ -56,3 +74,4 @@ export function likeCard(card) {
   const cardLikeButtonElement = card.querySelector('.card__like-button');
   cardLikeButtonElement.classList.toggle('card__like-button_is-active');
 }
+

@@ -77,9 +77,9 @@ function renderUser(userData) {
   // userId = userData._id;
 }
 
-function renderInitialCards(cardsData) {
+function renderInitialCards(cardsData, userId) {
   cardsData.forEach((cardData) => {
-    const card = createCard(cardData, deleteCard, likeCard, viewImage);
+    const card = createCard(cardData, userId, deleteCard, likeCard, viewImage);
     cardListContainer.append(card);
 })  
 }
@@ -91,9 +91,8 @@ function renderInitialPage() {
   ])
     .then(([ userData, cardsData ]) => {
       const userId = userData._id;
-      console.log(userId);
       renderUser(userData);
-      renderInitialCards(cardsData);
+      renderInitialCards(cardsData, userId);
     })
     .catch((err) => {
       console.error(`Ошибка: ${err}`)
@@ -103,19 +102,10 @@ function renderInitialPage() {
 
 //ИНИЦИАЛИЗАЦИЯ СТРАНИЦЫ
 
+// Отрисовываем исходную страницу: информацию о пользователе и карточки:
 renderInitialPage(); 
-// let userId;
-
-
-// СТАРАЯ ВЕРСИЯ (удалить) Выводим исходные карточки на страницу:
-
-// initialCards.forEach((cardData) => {
-//   const card = createCard(cardData, deleteCard, likeCard, viewImage);
-//   cardListContainer.append(card);
-// })
 
 // Вешаем слушатели на статичные элементы:
-
 buttonsClosePopup.forEach(button => {
   button.addEventListener('click', function (event) {
     const activePopup = event.target.closest('.popup');
@@ -124,7 +114,6 @@ buttonsClosePopup.forEach(button => {
 })
 
 // Включаем валидацию всех форм на странице:
-
 enableValidation(validationConfig);
 
 
@@ -147,9 +136,13 @@ function handleAddCardSubmit(evt) {
     name: cardNameInput.value,
     link: cardImageUrlInput.value
   }
-  postNewCard(cardData.name, cardData.link)
-    .then((cardData) => {
-      const card = createCard(cardData, deleteCard, likeCard, viewImage);
+  Promise.all([
+    getUser(),
+    postNewCard(cardData.name, cardData.link)
+  ])
+    .then(([ userData, cardData ]) => {
+      console.log("Начинаем создавать новую карточку")
+      const card = createCard(cardData, userData._id, deleteCard, likeCard, viewImage);
       cardListContainer.prepend(card);
     })
     .catch((err) => {
