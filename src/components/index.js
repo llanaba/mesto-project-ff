@@ -3,7 +3,8 @@ import { validationConfig } from '../utils/constants.js'
 import { 
   createCard, 
   deleteCard, 
-  handleLikeCard 
+  handleLikeCard,
+  confirmDeletion
 } from './card.js';
 import { openModal, closeModal } from './modal.js';
 import { enableValidation, clearValidation, toggleButtonState } from './validation';
@@ -35,6 +36,7 @@ export const popupAddNewCard = document.querySelector('.popup_type_new-card');
 export const popupEditProfile = document.querySelector('.popup_type_edit');
 export const popupEditAvatar = document.querySelector('.popup_type_edit-avatar');
 export const popupViewImage = document.querySelector('.popup_type_image');
+export const popupConfirmDelete = document.querySelector('.popup_type_confirm-delete');
 
 // Формы:
 // форма редактирования профиля:
@@ -48,6 +50,9 @@ const userAvatarInput = editAvatarFormElement.querySelector('.popup__input_type_
 const createCardFormElement = popupAddNewCard.querySelector('.popup__form');
 const cardNameInput = createCardFormElement.querySelector('.popup__input_type_card-name');
 const cardImageUrlInput = createCardFormElement.querySelector('.popup__input_type_url');
+
+// Форма подтверждения удаления карточки:
+const confirmDeleteFormElement = popupConfirmDelete.querySelector('.popup__form');
 
 // Элементы изображения и подписи к нему:
 const imageElement = popupViewImage.querySelector('.popup__image');
@@ -135,11 +140,20 @@ function renderLoading(formElement, isLoading) {
 renderInitialPage(); 
 
 // Вешаем слушатели на статичные элементы:
+
+// Слушатели на кнопки закрытия попапов:
 buttonsClosePopup.forEach(button => {
   button.addEventListener('click', function (event) {
     const activePopup = event.target.closest('.popup');
     closeModal(activePopup);
   })
+})
+
+// Слушатель на кнопку подтверждения удаления карточки: вызывает функцию
+// confirmDeletion, удаляющую карточку
+confirmDeleteFormElement.addEventListener('submit', function(evt) {
+  evt.preventDefault();
+  confirmDeletion();
 })
 
 // Включаем валидацию всех форм на странице:

@@ -1,4 +1,12 @@
 import { deleteCardApi, likeCardApi } from './api.js'
+import { popupConfirmDelete } from './index.js'
+import { openModal, closeModal } from './modal.js'
+
+// Переменная для хранения колбэка удаления карточки: при нажатии на кнопку
+// удаления на карточке, вызывается функция configurePerformDelete, которая 
+// меняет содержимое переменной performDelete. При подтверждении удаления 
+// карточки код, записанный в performDelete, исполняется.
+let performDelete;
 
 function isOwner(cardData, userId) {
   return (cardData.owner._id === userId);
@@ -8,6 +16,24 @@ function isLiked(cardData, userId) {
   return cardData.likes.some((like) => {
     return like._id === userId;
   });
+}
+
+/**
+ * Сохраняет в переменную performDelete настройки функции удаления, которая 
+ * сработает при подтверждении удаления
+ * @param {Function} deletionFunction - колбэк, ответственный за удаление (он создается
+ * в момент создания карточки и хранит в себе данные карточки и данные 
+ * html элемента карточки)
+ */
+function configurePerformDelete(deletionFunction) {
+  performDelete = deletionFunction;
+}
+
+/**
+ * Исполняет код, записанный в переменную performDelete с помощью configurePerformDelete.
+ */
+export function confirmDeletion() {
+  performDelete();
 }
 
 /**
@@ -47,7 +73,16 @@ export function createCard(cardData, userId, deleteCard, handleLikeCard, viewIma
 
   // Вешаем обработчик событий на кнопку удаления:
   cardDeleteButtonElement.addEventListener('click', function () {
-    deleteCard(cardElement, cardData);
+    openModal(popupConfirmDelete);
+    configurePerformDelete(() => {
+      deleteCard(cardElement, cardData)
+        .then(() => {
+          closeModal(popupConfirmDelete);
+        })
+        .catch((err) => {
+          console.error(`Ошибка: ${err}`);
+        })
+    })
   });
 
   // Вешаем обработчик событий на кнопку лайка:
@@ -69,7 +104,7 @@ export function createCard(cardData, userId, deleteCard, handleLikeCard, viewIma
  * @param {HTMLElement} card — элемент карточки, которую необходимо удалить
  */
 export function deleteCard(cardElement, cardData) {
-  deleteCardApi(cardData._id)
+  return deleteCardApi(cardData._id)
     .then((res) => {
       cardElement.remove();
     })
