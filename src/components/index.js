@@ -1,5 +1,4 @@
 import '../pages/index.css';
-import initialCards from './cards.js';
 import { 
   createCard, 
   deleteCard, 
@@ -9,6 +8,7 @@ import { openModal, closeModal } from './modal.js';
 import { enableValidation, clearValidation, toggleButtonState } from './validation';
 import { 
   getUser, 
+  updateAvatar,
   getInitialCards, 
   updateProfileInfo, 
   postNewCard
@@ -140,7 +140,6 @@ function handleAddCardSubmit(evt) {
     postNewCard(cardData.name, cardData.link)
   ])
     .then(([ userData, cardData ]) => {
-      console.log("Начинаем создавать новую карточку")
       const card = createCard(cardData, userData._id, deleteCard, handleLikeCard, viewImage);
       cardListContainer.prepend(card);
     })
@@ -185,6 +184,14 @@ function handleEditProfileFormSubmit(evt) {
 };
 
 editProfileFormElement.addEventListener('submit', handleEditProfileFormSubmit);
+
+// Обновление аватара:
+
+updateAvatar()
+  .then((userData) => {
+    renderUser(userData);
+  });
+
 
 // Просмотр изображений:
 

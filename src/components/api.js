@@ -41,6 +41,22 @@ export function updateProfileInfo (userName, userDescription) {
   });
 }
 
+export function updateAvatar (avatarUrl) {
+  return fetch(`${apiConfig.baseUrl}users/me/avatar`, {
+    method: 'PATCH',
+    headers: apiConfig.headers,
+    body: JSON.stringify({
+      avatar: "https://img.freepik.com/free-vector/mysterious-mafia-man-smoking-cigarette_52683-34828.jpg"
+    })
+  })
+  .then((res) => {
+    if (res.ok) {
+      return res.json();
+    }
+    return Promise.reject(`Ошибка: ${res.status}`);
+  })
+}
+
 export function postNewCard(cardName, imageLink) {
   return fetch(`${apiConfig.baseUrl}cards`, {
     method: 'POST',
