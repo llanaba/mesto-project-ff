@@ -54,14 +54,26 @@ const imageElement = popupViewImage.querySelector('.popup__image');
 const imageCaption = popupViewImage.querySelector('.popup__caption');
 
 
-
-
+/**
+ * Отображает информацию о пользователе на странице
+ * @param {Object} userData - Объект, содержащий информацию о пользователе
+ * @param {string} userData.name - Имя пользователя
+ * @param {string} userData.about - Описание пользователя (job)
+ * @param {string} userData.avatar - Ссылка на аватар пользователя
+ */
 function renderUser(userData) {
   userName.textContent = userData.name;
   userDescription.textContent = userData.about;
   userAvatar.style.backgroundImage = `url(${userData.avatar})`;
 }
 
+/**
+ * Отрисовывает карточки на странице
+ * @param {Array} cardsData - Список объектов карточек, которые нужно отобразить
+ * @param {string} userId - Id пользователя (необходим, чтобы определять принадлежность
+ * карточки данному пользователю: если карточка принадлежит пользователю, он имеет
+ * возможность ее удалять, а если не принадлежит, то он не может ее удалить)
+ */
 function renderInitialCards(cardsData, userId) {
   cardsData.forEach((cardData) => {
     const card = createCard(cardData, userId, deleteCard, handleLikeCard, viewImage);
@@ -69,6 +81,12 @@ function renderInitialCards(cardsData, userId) {
 })  
 }
 
+/**
+ * Отрисовывает страницу при первой загрузке. Для этого функция делает два параллельных
+ * запроса: для получения карточек и для получения данных пользователя. 
+ * @returns {Promise} Промис, ответственный за получение данных сразу от двух запросов:
+ * данные пользователя и данные карточек, существующих на сервере.
+ */
 function renderInitialPage() {
   Promise.all([
     getUser(),
@@ -84,6 +102,10 @@ function renderInitialPage() {
     })
 }
 
+/**
+ * Очищает форму от введенных в нее данных и делает неактивной кнопку отправки формы
+ * @param {HTMLFormElement} formElement - Форма, которую необходимо очистить
+ */
 function resetForm(formElement) {
   formElement.reset();
   const button = formElement.querySelector(validationConfig.submitButtonSelector);
@@ -91,6 +113,13 @@ function resetForm(formElement) {
   toggleButtonState(validationConfig, inputList, button);
 }
 
+/**
+ * Меняет текст на кнопке отправки формы, чтобы визуализировать загрузку
+ * @param {HTMLFormElement} formElement - Форма, сохранение данных в которой нужно визуализировать
+ * @param {boolean} isLoading - Параметр, который передается при вызове функции, чтобы
+ * определить ее состояние: true, если нужно отобразить текст при загрузке, и false,
+ * если нужно отобразить кнопку в обычном состоянии
+ */
 function renderLoading(formElement, isLoading) {
   const button = formElement.querySelector(validationConfig.submitButtonSelector);
   if (isLoading) {
@@ -128,7 +157,7 @@ buttonAddNewCard.addEventListener('click', function () {
 /**
  * Обрабатывает отправку формы добавления карточки: создает новую карточку 
  * и добавляет ее в начало списка карточек.
- * @param {Event} evt 
+ * @param {Event} evt — событие отправки формы
  */
 function handleAddCardSubmit(evt) {
   evt.preventDefault();
@@ -154,7 +183,6 @@ function handleAddCardSubmit(evt) {
       renderLoading(createCardFormElement, false);
     })
 }
-
 createCardFormElement.addEventListener('submit', handleAddCardSubmit);
 
 // Редактирование профиля: 
@@ -169,7 +197,7 @@ buttonEditProfile.addEventListener('click', function () {
 /**
  * Обрабатывает отправку формы редактирования профиля: позволяет изменить
  * имя пользователя и описание.
- * @param {Event} evt 
+ * @param {Event} evt — событие отправки формы
  */
 function handleEditProfileFormSubmit(evt) {
   evt.preventDefault();
@@ -186,7 +214,6 @@ function handleEditProfileFormSubmit(evt) {
       renderLoading(editProfileFormElement, false);
     })
 };
-
 editProfileFormElement.addEventListener('submit', handleEditProfileFormSubmit);
 
 // Обновление аватара:
@@ -196,6 +223,12 @@ buttonEditAvatar.addEventListener('click', function () {
   openModal(popupEditAvatar);
 })
 
+/**
+ * Обрабатывает форму отправки ссылки при обновлении аватара: отправляет новую ссылку
+ * на сервер и отображает новый аватар, если ссылка прошла валидацию.
+ * @param {Event} evt — событие отправки формы
+ * @throws {Error} — если ссылка на картинку не прошла валидацию
+ */
 function handleEditAvatarFormSubmit(evt) {
   evt.preventDefault();
   renderLoading(editAvatarFormElement, true);
@@ -212,7 +245,6 @@ function handleEditAvatarFormSubmit(evt) {
       renderLoading(editAvatarFormElement, false);
     })
 }
-
 editAvatarFormElement.addEventListener('submit', handleEditAvatarFormSubmit);
 
 // Просмотр изображений:
