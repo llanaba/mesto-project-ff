@@ -1,4 +1,4 @@
-import { apiConfig } from './index.js'
+import { apiConfig } from '../utils/constants.js'
 
 export function getUser() {
   return fetch(`${apiConfig.baseUrl}users/me`, {
