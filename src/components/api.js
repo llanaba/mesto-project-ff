@@ -42,20 +42,33 @@ export function updateProfileInfo (userName, userDescription) {
 }
 
 export function updateAvatar (avatarUrl) {
-  return fetch(`${apiConfig.baseUrl}users/me/avatar`, {
-    method: 'PATCH',
-    headers: apiConfig.headers,
-    body: JSON.stringify({
-      avatar: avatarUrl
-    })
+  return fetch(avatarUrl, {
+    method: 'HEAD'
   })
-  .then((res) => {
-    if (res.ok) {
-      return res.json();
+  .then(res => {
+    console.log(res.headers.get('Content-Type'));
+    if (res.ok && res.headers.get('Content-Type').startsWith('image/')) {
+      return fetch(`${apiConfig.baseUrl}users/me/avatar`, {
+        method: 'PATCH',
+        headers: apiConfig.headers,
+        body: JSON.stringify({
+          avatar: avatarUrl
+        })
+      });
+    } else { 
+      return Promise.reject('По этой ссылке нет изображения');
     }
-    return Promise.reject(`Ошибка: ${res.status}`);
   })
-}
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+        return Promise.reject(`Ошибка: ${res.status}`);
+      })
+      .catch((err) => {
+        return Promise.reject(`Ссылка на аватар не прошла валидацию: ${err}`);
+      })
+    }
 
 export function postNewCard(cardName, imageLink) {
   return fetch(`${apiConfig.baseUrl}cards`, {
