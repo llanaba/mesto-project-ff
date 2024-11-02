@@ -91,6 +91,14 @@ function resetForm(formElement) {
   toggleButtonState(validationConfig, inputList, button);
 }
 
+function renderLoading(formElement, isLoading) {
+  const button = formElement.querySelector(validationConfig.submitButtonSelector);
+  if (isLoading) {
+    button.textContent = 'Сохранение...';
+  } else {
+    button.textContent = button.getAttribute('data-button-text');
+  }
+}
 
 //ИНИЦИАЛИЗАЦИЯ СТРАНИЦЫ
 
@@ -124,6 +132,7 @@ buttonAddNewCard.addEventListener('click', function () {
  */
 function handleAddCardSubmit(evt) {
   evt.preventDefault();
+  renderLoading(createCardFormElement, true);
   const cardData = {
     name: cardNameInput.value,
     link: cardImageUrlInput.value
@@ -140,6 +149,9 @@ function handleAddCardSubmit(evt) {
     })
     .catch((err) => {
       console.error(`Ошибка: ${err}`)
+    })
+    .finally((err) => {
+      renderLoading(createCardFormElement, false);
     })
 }
 
@@ -161,6 +173,7 @@ buttonEditProfile.addEventListener('click', function () {
  */
 function handleEditProfileFormSubmit(evt) {
   evt.preventDefault();
+  renderLoading(editProfileFormElement, true);
   updateProfileInfo(userNameInput.value, userDescriptionInput.value)
     .then((userData) => {
       renderUser(userData);
@@ -168,6 +181,9 @@ function handleEditProfileFormSubmit(evt) {
     })
     .catch((err) => {
       console.error(`Ошибка: ${err}`);
+    })
+    .finally(() => {
+      renderLoading(editProfileFormElement, false);
     })
 };
 
@@ -182,6 +198,7 @@ buttonEditAvatar.addEventListener('click', function () {
 
 function handleEditAvatarFormSubmit(evt) {
   evt.preventDefault();
+  renderLoading(editAvatarFormElement, true);
   updateAvatar(userAvatarInput.value)
     .then((userData) => {
       renderUser(userData);
@@ -190,6 +207,9 @@ function handleEditAvatarFormSubmit(evt) {
     })
     .catch((err) => {
       console.error(`Ошибка: ${err}`);
+    })
+    .finally(() => {
+      renderLoading(editAvatarFormElement, false);
     })
 }
 
