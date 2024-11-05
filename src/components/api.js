@@ -1,6 +1,18 @@
 import { apiConfig } from '../utils/constants.js'
 
 /**
+ * Обрабатывает HTTP-ответ и возвращает его в формате JSON (или возвращает
+ * ошибку)
+ * @param {Response} res - объект запроса
+ */
+function getResponseData(res) {
+  if (res.ok) {
+    return res.json();
+  }
+  return Promise.reject(`Ошибка: ${res.status}`);
+}
+
+/**
  * Забирает с сервера данные о пользователе
  * @returns {Promise<Object>} Промис, в котором возвращаются данные пользователя
  */
@@ -9,11 +21,8 @@ export function getUser() {
     headers: apiConfig.headers
 })
   .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
-  }) 
+    return getResponseData(res);
+  });
 }
 
 /**
@@ -24,12 +33,9 @@ export function getInitialCards() {
   return fetch(`${apiConfig.baseUrl}cards`, {
     headers: apiConfig.headers
   })
-  .then((res) => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
-  })
+  .then(res => {
+    return getResponseData(res);
+  });
 }
 
 /**
@@ -47,11 +53,8 @@ export function updateProfileInfo (userName, userDescription) {
       about: userDescription
     })
   })
-  .then((res) => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
+  .then(res => {
+    return getResponseData(res);
   });
 }
 
@@ -78,11 +81,8 @@ export function updateAvatar (avatarUrl) {
       return Promise.reject('По этой ссылке нет изображения');
     }
   })
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-        return Promise.reject(`Ошибка: ${res.status}`);
+      .then(res => {
+        return getResponseData(res);
       })
       .catch((err) => {
         return Promise.reject(`Ссылка на аватар не прошла валидацию: ${err}`);
@@ -104,12 +104,9 @@ export function postNewCard(cardName, imageLink) {
       link: imageLink
     })
   })
-    .then((res) => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-  });
+    .then(res => {
+      return getResponseData(res);
+    });
 }
 
 /**
@@ -122,12 +119,9 @@ export function deleteCardApi(cardId) {
     method: 'DELETE',
     headers: apiConfig.headers
   })
-    .then((res) => {
-      if (res.ok) {
-        return res
-      } 
-      return Promise.reject(`Ошибка: ${res.status}`);
-    })
+  .then(res => {
+    return getResponseData(res);
+  });
 }
 
 /**
@@ -142,10 +136,7 @@ export function likeCardApi(cardId, method) {
     method: method,
     headers: apiConfig.headers
   })
-    .then((res) => {
-      if (res.ok) {
-        return res.json();
-      } 
-      return Promise.reject(`Ошибка: ${res.status}`);
-    })
+    .then(res => {
+      return getResponseData(res);
+    });
 }

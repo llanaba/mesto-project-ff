@@ -165,6 +165,7 @@ enableValidation(validationConfig);
 // Добавление новой карточки на страницу: 
 
 buttonAddNewCard.addEventListener('click', function () {
+  resetForm(createCardFormElement);
   openModal(popupAddNewCard);
 });
 
@@ -180,12 +181,9 @@ function handleAddCardSubmit(evt) {
     name: cardNameInput.value,
     link: cardImageUrlInput.value
   }
-  Promise.all([
-    getUser(),
-    postNewCard(cardData.name, cardData.link)
-  ])
-    .then(([ userData, cardData ]) => {
-      const card = createCard(cardData, userData._id, deleteCard, handleLikeCard, viewImage);
+  postNewCard(cardData.name, cardData.link)
+    .then((cardData) => {
+      const card = createCard(cardData, cardData.owner._id, deleteCard, handleLikeCard, viewImage);
       cardListContainer.prepend(card);
       resetForm(createCardFormElement);
       closeModal(popupAddNewCard);
@@ -193,10 +191,10 @@ function handleAddCardSubmit(evt) {
     .catch((err) => {
       console.error(`Ошибка: ${err}`)
     })
-    .finally((err) => {
+    .finally(() => {
       renderLoading(createCardFormElement, false);
     })
-}
+  }
 createCardFormElement.addEventListener('submit', handleAddCardSubmit);
 
 // Редактирование профиля: 
