@@ -1,12 +1,4 @@
 import { deleteCardApi, likeCardApi } from './api.js'
-import { popupConfirmDelete } from './index.js'
-import { openModal, closeModal } from './modal.js'
-
-// Переменная для хранения колбэка удаления карточки: при нажатии на кнопку
-// удаления на карточке, вызывается функция configurePerformDelete, которая 
-// меняет содержимое переменной performDelete. При подтверждении удаления 
-// карточки код, записанный в performDelete, исполняется.
-let performDelete;
 
 function isOwner(cardData, userId) {
   return (cardData.owner._id === userId);
@@ -19,31 +11,13 @@ function isLiked(cardData, userId) {
 }
 
 /**
- * Сохраняет в переменную performDelete настройки функции удаления, которая 
- * сработает при подтверждении удаления
- * @param {Function} deletionFunction - колбэк, ответственный за удаление (он создается
- * в момент создания карточки и хранит в себе данные карточки и данные 
- * html элемента карточки)
- */
-function configurePerformDelete(deletionFunction) {
-  performDelete = deletionFunction;
-}
-
-/**
- * Исполняет код, записанный в переменную performDelete с помощью configurePerformDelete.
- */
-export function confirmDeletion() {
-  performDelete();
-}
-
-/**
  * Создает элемент карточки, получая на вход данные карточки, функцию удаления
  * и функцию лайка карточки
  * @param {Object} cardData — объект, содержащий данные карточки
  * @param {Function} deleteCard — колбэк-функция, ответственная за удаление карточки
  * @returns {HTMLElement} card — готовый к добавлению в DOM элемент карточки
  */
-export function createCard(cardData, userId, deleteCard, handleLikeCard, viewImage) {
+export function createCard(cardData, userId, handleDelete, handleLikeCard, viewImage) {
   // Клонируем темплейт карточки, ищем в нем все элементы:
   const cardTemplate = document.querySelector('#card-template').content;
   const card = {
@@ -76,17 +50,8 @@ export function createCard(cardData, userId, deleteCard, handleLikeCard, viewIma
 
   // Вешаем обработчик событий на кнопку удаления:
   cardDeleteButtonElement.addEventListener('click', function () {
-    openModal(popupConfirmDelete);
-    configurePerformDelete(() => {
-      deleteCard(card)
-        .then(() => {
-          closeModal(popupConfirmDelete);
-        })
-        .catch((err) => {
-          console.error(`Ошибка: ${err}`);
-        })
-    })
-  });
+    handleDelete(card);
+  })
 
   // Вешаем обработчик событий на кнопку лайка:
   cardLikeButtonElement.addEventListener('click', function () {
@@ -99,7 +64,6 @@ export function createCard(cardData, userId, deleteCard, handleLikeCard, viewIma
   });
 
   // Возвращаем готовый элемент карточки:
-  console.log(card)
   return card;
 }
 

@@ -3,8 +3,7 @@ import { validationConfig } from '../utils/constants.js'
 import { 
   createCard, 
   deleteCard, 
-  handleLikeCard,
-  confirmDeletion
+  handleLikeCard
 } from './card.js';
 import { openModal, closeModal } from './modal.js';
 import { enableValidation, clearValidation, toggleButtonState } from './validation';
@@ -15,6 +14,49 @@ import {
   updateProfileInfo, 
   postNewCard
 } from './api';
+
+// Переменная для хранения колбэка удаления карточки: при нажатии на кнопку
+// удаления на карточке вызывается функция configurePerformDelete, которая 
+// меняет содержимое переменной performDelete. При подтверждении удаления 
+// карточки код, записанный в performDelete, исполняется.
+let performDelete;
+
+/**
+ * Сохраняет в переменную performDelete настройки функции удаления, которая 
+ * сработает при подтверждении удаления
+ * @param {Function} deletionFunction - колбэк, ответственный за удаление (он создается
+ * в момент создания карточки и хранит в себе данные карточки и данные 
+ * html элемента карточки)
+ */
+function configurePerformDelete(deletionFunction) {
+  performDelete = deletionFunction;
+}
+
+/**
+ * Исполняет код, записанный в переменную performDelete с помощью configurePerformDelete.
+ */
+function confirmDeletion() {
+  performDelete();
+}
+
+/**
+ * Обрабатывает удаление карточки: открывает модальное окно для подтверждения удаления
+ * и перезаписывает значение переменной performDelete, используя данные карточки, которую
+ * пользователь хочет удалить. 
+ * @param {Object} card - объект карточки, которую нужно удалить
+ */
+function handleDelete(card) {
+  openModal(popupConfirmDelete);
+  configurePerformDelete(() => {
+    deleteCard(card)
+      .then(() => {
+        closeModal(popupConfirmDelete);
+      })
+      .catch((err) => {
+        console.error(`Ошибка: ${err}`)
+      })
+  })
+}
 
 // DOM-ЭЛЕМЕНТЫ СТРАНИЦЫ
 
@@ -81,7 +123,7 @@ function renderUser(userData) {
  */
 function renderInitialCards(cardsData, userId) {
   cardsData.forEach((cardData) => {
-    const card = createCard(cardData, userId, deleteCard, handleLikeCard, viewImage);
+    const card = createCard(cardData, userId, handleDelete, handleLikeCard, viewImage);
     cardListContainer.append(card.element);
 })  
 }
@@ -183,7 +225,7 @@ function handleAddCardSubmit(evt) {
   }
   postNewCard(cardData.name, cardData.link)
     .then((cardData) => {
-      const card = createCard(cardData, cardData.owner._id, deleteCard, handleLikeCard, viewImage);
+      const card = createCard(cardData, cardData.owner._id, handleDelete, handleLikeCard, viewImage);
       cardListContainer.prepend(card.element);
       resetForm(createCardFormElement);
       closeModal(popupAddNewCard);
