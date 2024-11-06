@@ -82,7 +82,7 @@ function renderUser(userData) {
 function renderInitialCards(cardsData, userId) {
   cardsData.forEach((cardData) => {
     const card = createCard(cardData, userId, deleteCard, handleLikeCard, viewImage);
-    cardListContainer.append(card);
+    cardListContainer.append(card.element);
 })  
 }
 
@@ -184,7 +184,7 @@ function handleAddCardSubmit(evt) {
   postNewCard(cardData.name, cardData.link)
     .then((cardData) => {
       const card = createCard(cardData, cardData.owner._id, deleteCard, handleLikeCard, viewImage);
-      cardListContainer.prepend(card);
+      cardListContainer.prepend(card.element);
       resetForm(createCardFormElement);
       closeModal(popupAddNewCard);
     })

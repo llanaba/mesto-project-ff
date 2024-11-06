@@ -41,17 +41,20 @@ export function confirmDeletion() {
  * и функцию лайка карточки
  * @param {Object} cardData — объект, содержащий данные карточки
  * @param {Function} deleteCard — колбэк-функция, ответственная за удаление карточки
- * @returns {HTMLElement} cardElement — готовый к добавлению в DOM элемент карточки
+ * @returns {HTMLElement} card — готовый к добавлению в DOM элемент карточки
  */
 export function createCard(cardData, userId, deleteCard, handleLikeCard, viewImage) {
   // Клонируем темплейт карточки, ищем в нем все элементы:
   const cardTemplate = document.querySelector('#card-template').content;
-  const cardElement = cardTemplate.querySelector('li').cloneNode(true);
-  const cardTitleElement = cardElement.querySelector('.card__title');
-  const cardImageElement = cardElement.querySelector('.card__image');
-  const cardDeleteButtonElement = cardElement.querySelector('.card__delete-button');
-  const cardLikeButtonElement = cardElement.querySelector('.card__like-button');
-  const cardLikeCounter = cardElement.querySelector('.card__like-counter');
+  const card = {
+    element: cardTemplate.querySelector('li').cloneNode(true),
+    _id: cardData._id
+  }
+  const cardTitleElement = card.element.querySelector('.card__title');
+  const cardImageElement = card.element.querySelector('.card__image');
+  const cardDeleteButtonElement = card.element.querySelector('.card__delete-button');
+  const cardLikeButtonElement = card.element.querySelector('.card__like-button');
+  const cardLikeCounter = card.element.querySelector('.card__like-counter');
   
   // Заполняем элементы карточки данными:
   cardTitleElement.textContent = cardData.name;
@@ -75,7 +78,7 @@ export function createCard(cardData, userId, deleteCard, handleLikeCard, viewIma
   cardDeleteButtonElement.addEventListener('click', function () {
     openModal(popupConfirmDelete);
     configurePerformDelete(() => {
-      deleteCard(cardElement, cardData)
+      deleteCard(card)
         .then(() => {
           closeModal(popupConfirmDelete);
         })
@@ -96,17 +99,18 @@ export function createCard(cardData, userId, deleteCard, handleLikeCard, viewIma
   });
 
   // Возвращаем готовый элемент карточки:
-  return cardElement;
+  console.log(card)
+  return card;
 }
 
 /**
  * Удаляет элемент карточки, переданный в качестве аргумента
  * @param {HTMLElement} card — элемент карточки, которую необходимо удалить
  */
-export function deleteCard(cardElement, cardData) {
-  return deleteCardApi(cardData._id)
+export function deleteCard(card) {
+  return deleteCardApi(card._id)
     .then((res) => {
-      cardElement.remove();
+      card.element.remove();
     })
     .catch((err) => {
       console.error(`Ошибка: ${err}`)
